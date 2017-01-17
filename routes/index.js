@@ -3,7 +3,13 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Tracker Notifier' });
+    let sess = req.session;
+    if(sess.logged === true) {
+        res.redirect('/panel');
+    } else {
+        res.render('login', { title: 'Tracker Notifier' });
+    }
+    
 });
 
 module.exports = router;

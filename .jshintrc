@@ -48,5 +48,9 @@
     "validthis": false,
     "noyield": false,
 
-    "node": true
+    "node": true,
+
+    "globals": {
+        "assert": true
+    }
 }
