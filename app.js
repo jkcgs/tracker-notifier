@@ -29,6 +29,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(expressValidator());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('./node_modules/angular/'));
+app.use(express.static('./node_modules/bootstrap/dist/'));
+app.use(express.static('./node_modules/jquery/dist/'));
+app.use(express.static('./node_modules/tether/dist/'));
 
 // Append socket to res in event loop
 app.use(function(req, res, next){
@@ -49,14 +53,13 @@ store.on('error', function(error) {
 
 app.use(session({ 
     secret: config.cookieSecret, 
-    cookie: { maxAge: 60000 },
-    resave: false,
-    saveUninitialized: true,
+    resave: true,
+    saveUninitialized: false,
     store: store
 }));
 
 // Cargar módulos
-require('./loader')(app);
+require('./server/loader')(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

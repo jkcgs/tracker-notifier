@@ -3,10 +3,11 @@ const mongoose = require('mongoose');
 let itemSchema = mongoose.Schema({
     code: String,
     provider: String,
-    nextCheck: Date,
+    nextCheck: Number,
     currentStatus: String,
     lastUpdate: Date,
-    userId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    altCodes: [String]
 });
 
 let Item = mongoose.model('Item', itemSchema);

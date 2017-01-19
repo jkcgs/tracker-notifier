@@ -3,35 +3,39 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 let config = require('../config.json');
-
 let db = mongoose.connection;
 
 mongoose.connect(config.dburi);
-db.on('error', console.error.bind(console, 'connection error:'));
+db.on('error', console.error.bind(console, 'Connection error:'));
 db.once('open', () => {
     debug('Connected to database!');
 
-    let User = require('../models/user');
+    // Get users count
+    let User = require('./models/user');
     User.find((err, res) => {
         if(err) {
             throw err;
         }
 
+        // Display user count
         debug('Users: ' + res.length);
-        if(res.length === 0) {
-            let hehe = new User({
-                username: config.initUserName,
-                password: config.initUserPassword
-            });
-
-            hehe.save((err2, res, aff) => {
-                if(err2) {
-                    throw err2;
-                }
-
-                debug('Init user added!');
-            });
+        if(res.length > 0) {
+            return;
         }
+
+        // Add initial user if no user was found
+        let hehe = new User({
+            username: config.initUserName,
+            password: config.initUserPass
+        });
+
+        hehe.save((err2) => {
+            if(err2) {
+                throw err2;
+            }
+
+            debug('Initial user added!');
+        });
     });
 });
 

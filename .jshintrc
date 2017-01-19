@@ -49,8 +49,12 @@
     "noyield": false,
 
     "node": true,
+    "browser": true,
+    "devel": true,
 
     "globals": {
-        "assert": true
+        "assert": true,
+        "angular": true,
+        "$": true
     }
 }

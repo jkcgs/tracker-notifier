@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Login</title>
+
+        <!-- Bootstrap CSS -->
+        <link href="/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body ng-app="app">
+        <div class="container mt-3">
+            <div class="row justify-content-center">
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-header">
+                            Iniciar sesión
+                        </div>
+                        <div class="card-block">
+                            <form action="/login" method="POST">
+                                <div class="form-group">
+                                    <label for="username">Usuario</label>
+                                    <input type="text" class="form-control" name="username" id="username">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Contraseña</label>
+                                    <input type="password" class="form-control" name="password" id="password">
+                                </div>
+                                <div class="form-group text-right">
+                                    <input type="submit" class="btn btn-primary" value="Ingresar">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>       
+        </div>
+
+        <script src="/jquery.slim.min.js"></script>
+        <script src="/js/tether.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
+    </body>
+</html>

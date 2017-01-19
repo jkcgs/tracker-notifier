@@ -6,8 +6,10 @@
     "start": "node ./node_modules/cross-env/bin/cross-env.js DEBUG=tracker-notifier:* node ./bin/www"
   },
   "dependencies": {
+    "angular": "^1.6.1",
     "bcrypt": "^1.0.2",
     "body-parser": "~1.15.2",
+    "bootstrap": "^4.0.0-alpha.6",
     "cheerio": "^0.22.0",
     "connect-mongodb-session": "^1.3.0",
     "cookie-parser": "~1.4.3",
@@ -17,11 +19,14 @@
     "express-session": "^1.14.2",
     "express-validator": "^3.1.2",
     "hbs": "~4.0.1",
+    "jquery": "^3.1.1",
     "mongoose": "^4.7.7",
     "morgan": "~1.7.0",
+    "prompt": "^1.0.0",
     "request": "^2.79.0",
     "serve-favicon": "~2.3.0",
-    "socket.io": "^1.7.2"
+    "socket.io": "^1.7.2",
+    "tether": "^1.4.0"
   },
   "description": "Esta aplicación tiene como intención rastrear envíos de ciertos proveedores y poder notificar de cambios en el estado del envío.",
   "main": "app.js",
@@ -31,7 +36,7 @@
     "url": "git+https://github.com/jkcgs/tracker-notifier.git"
   },
   "author": "jkcgs",
-  "license": "MIT",
+  "license": "WTFPL-2.0",
   "bugs": {
     "url": "https://github.com/jkcgs/tracker-notifier/issues"
   },
