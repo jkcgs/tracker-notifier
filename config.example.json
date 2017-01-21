@@ -2,8 +2,7 @@
     "dburi": "mongodb://localhost/trackerNotifier",
     "cookieSecret": "keyboard cat",
 
-    // Added user if there is none
-    // Password is 1234
+    "#comment": "Added user if there is none, password is 1234",
     "initUserName": "admin",
     "initUserPass": "$2a$10$sr3VmqRvMNjUAeTVw2o/8ejn.vrPnY6rBW21Y8oC61YwBMJu0NWPq" 
 }

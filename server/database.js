@@ -26,7 +26,8 @@ db.once('open', () => {
         // Add initial user if no user was found
         let hehe = new User({
             username: config.initUserName,
-            password: config.initUserPass
+            password: config.initUserPass,
+            spcode: ''
         });
 
         hehe.save((err2) => {
