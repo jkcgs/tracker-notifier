@@ -2,6 +2,10 @@ const debug = require('debug')('tracker-notifier:session');
 const express = require('express');
 const util = require('util');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const jwtVerify = require('../jwt-verify');
+const config = require('../../config.json');
+
 let User = require('../models/user');
 let router = express.Router();
 
@@ -30,6 +34,11 @@ router.post('/login', function(req, res, next) {
                 sess.logged = true;
                 sess.username = user.username;
                 sess.userid = user._id;
+
+                let token = jwt.sign({id: user._id}, config.cookieSecret, {
+                    expiresIn: '1d'
+                });
+                res.cookie('accessToken', token, { httpOnly: true });
                 res.redirect('/panel');
             });
         });
@@ -65,6 +74,10 @@ router.get('/session', function(req, res) {
     };
 
     res.json(data);
+});
+
+router.get('/sessiontest', jwtVerify, function(req, res, next) {
+    res.json('ok');
 });
 
 module.exports = router;
