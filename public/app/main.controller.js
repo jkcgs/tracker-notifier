@@ -37,6 +37,7 @@
             }
 
             Service.addCode(vm.newCode).then((res) => {
+                vm.newCode = '';
                 vm.codes.push(res.data);
                 $('#add-code').modal('hide');
             }, (err) => {

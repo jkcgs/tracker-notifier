@@ -40,7 +40,7 @@ router.post('/addcode', function(req, res) {
 
         let item = new Item({
             code: req.body.code,
-            provider: 'correoscl',
+            provider: 'cl_correos',
             nextCheck: 0,
             currentStatus: '',
             lastUpdate: new Date(),

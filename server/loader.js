@@ -17,7 +17,10 @@ function fun(app) {
         debug('Loaded ' + file.replace(__dirname, ''));
     });
 
-    debug('Routes loaded');
+    debug('Starting tracker loop...');
+    require('./tracker-loop').run();
+
+    debug('Done!');
 }
 
 
