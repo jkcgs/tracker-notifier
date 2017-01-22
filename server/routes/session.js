@@ -35,11 +35,11 @@ router.post('/login', function(req, res, next) {
                 sess.spcode = user.spcode;
                 sess.username = user.username;
                 sess.userid = user._id;
-
-                let token = jwt.sign({id: user._id}, config.cookieSecret, {
+                sess.token = jwt.sign({id: user._id}, config.cookieSecret, {
                     expiresIn: '1d'
                 });
-                res.cookie('accessToken', token, { httpOnly: true });
+
+                res.cookie('accessToken', sess.token, { httpOnly: true });
                 res.redirect('/panel');
             });
         });
@@ -72,9 +72,10 @@ router.get('/session', function(req, res) {
         logged: req.session.logged,
         username: req.session.username,
         userid: req.session.userid,
-        spcode: req.session.spcode
+        spcode: req.session.spcode,
+        token: req.session.token
     };
-
+    
     res.json(data);
 });
 

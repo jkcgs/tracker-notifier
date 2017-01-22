@@ -5,11 +5,12 @@
         .module('app')
         .controller('MainController', MainController);
 
-    MainController.inject = ['Service'];
-    function MainController(Service) {
+    MainController.inject = ['$timeout', 'Service'];
+    function MainController($timeout, Service) {
         var vm = this;
         vm.loading = true;
         vm.comm = false;
+        vm.token = '';
         vm.user = '';
         vm.spcode = '';
         vm.origspcode = '';
@@ -19,6 +20,7 @@
         vm.addCode = addCode;
         vm.changeSPC = changeSPC;
         vm.delCode = delCode;
+        vm.parseDate = parseDate;
         
         activate();
 
@@ -29,11 +31,27 @@
                 vm.user = session.username;
                 vm.spcode = session.spcode;
                 vm.origspcode = session.spcode;
+                vm.token = session.token;
+
+                socket.emit('register', {userid: session.userid, token: vm.token});
             });
 
             Service.getCodes().then((codes) => {
                 vm.codes = codes;
                 vm.loading = false;
+            });
+
+            socket.on('status', function(data) {
+                $timeout(() => {
+                    for(var i = 0; i < vm.codes.length; i++) {
+                        if(vm.codes[i].code === data.item.code) {
+                            vm.codes[i].currentStatus = data.info.status;
+                            vm.codes[i].lastUpdate = data.info.date;
+
+                            return;
+                        }
+                    }
+                });
             });
         }
 
@@ -82,6 +100,10 @@
                     alert('No se pudo eliminar el coso');
                 }
             });
+        }
+
+        function parseDate(date) {
+            return dateFormat(new Date(date), 'dd/mm/yyyy hh:mm');
         }
     }
 })();

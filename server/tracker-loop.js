@@ -67,6 +67,8 @@ function run() {
                 return provider.getStatus(item.code);
             }).then((info) => {
                 debug(info);
+                item.update({ currentStatus: info.status, lastUpdate: info.date });
+                io.to(item.user).emit('status', {item: item, info: info});
 
                 if(++j === items.length) {
                     debug('Done! Waiting 15 seconds to restart...');

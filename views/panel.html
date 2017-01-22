@@ -34,13 +34,17 @@
                 <table ng-if="vm.codes.length > 0" class="table codes-table">
                     <tr>
                         <th>Código</th>
+                        <th>Proveedor</th>
                         <th>Estado</th>
+                        <th>Fecha</th>
                         <th>Acciones</th>
                     </tr>
 
                     <tr ng-repeat="code in vm.codes">
                         <td>{{ code.code }}</td>
-                        <td ng-class="{'text-muted': !code.status}">{{ !code.status ? 'Ninguno xd' : code.status }}</td>
+                        <td>{{ code.provider }}</td>
+                        <td ng-class="{'text-muted': !code.currentStatus}">{{ !code.currentStatus ? 'Ninguno xd' : code.currentStatus }}</td>
+                        <td ng-class="{'text-muted': !code.lastUpdate}">{{ !code.lastUpdate ? '??' : vm.parseDate(code.lastUpdate) }}</td>
                         <td>
                             <a href="javascript:;" class="btn btn-danger btn-sm" role="button" ng-click="vm.delCode(code.code)">Eliminar</a>
                         </td>
@@ -75,7 +79,7 @@
         </form>
 
         <script src="/socket.io/socket.io.js"></script>
-        <script src="/app/socket.js"></script>
+        <script src="/dateformat.js"></script>
 
         <script src="/jquery.slim.min.js"></script>
         <script src="/js/tether.min.js"></script>

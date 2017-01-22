@@ -1,3 +1,5 @@
+var socket = io();
+
 (function() {
     'use strict';
 

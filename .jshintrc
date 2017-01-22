@@ -53,9 +53,11 @@
     "devel": true,
 
     "globals": {
-        "assert": true,
-        "angular": true,
-        "$": true,
-        "io": false
+        "assert": false,
+        "angular": false,
+        "$": false,
+        "io": true,
+        "socket": true,
+        "dateFormat": false
     }
 }

@@ -9,6 +9,7 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const debug = require('debug')('tracker-notifier:app');
 const expressValidator = require('express-validator');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 let config = require('./config.json');
 let db = require('./server/database');
@@ -16,6 +17,7 @@ let db = require('./server/database');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+global.io = io;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,10 +32,12 @@ app.use(cookieParser());
 app.use(expressValidator());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('./node_modules/angular/'));
+app.use(express.static('./node_modules/angular-cookies/'));
 app.use(express.static('./node_modules/bootstrap/dist/'));
 app.use(express.static('./node_modules/jquery/dist/'));
 app.use(express.static('./node_modules/tether/dist/'));
 app.use(express.static('./node_modules/font-awesome/'));
+app.use(express.static('./node_modules/dateformat/lib/'));
 
 // Append socket to res in event loop
 app.use(function(req, res, next){
@@ -92,6 +96,26 @@ app.use(function(err, req, res, next) {
     } else {
         res.render('error');
     }
+});
+
+io.on('connection', function(socket) {
+    socket.on('register', function(data) {
+        jwt.verify(data.token, config.cookieSecret, function(err, decoded) {
+            if(err) {
+                socket.emit('registration', 'error verifying token');
+                return debug(err);
+            }
+
+            if(decoded.id !== data.userid) {
+                socket.emit('registration', 'wrong id sent');
+                return debug('Socket@register: El usuario envió un ID de usuario incorrecto');
+            }
+
+            socket.join(data.userid);
+            socket.emit('registration', 'registered correctly, channel ' + data.userid);
+            debug(`Socket@register: user ${data.userid} socket ${socket.id}`);
+        });
+    });
 });
 
 module.exports = {app: app, server: server};

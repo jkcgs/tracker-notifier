@@ -14,7 +14,7 @@ router.post('/user/setspcode', jwtVerify, function(req, res, next) {
     }
 
     let userid = req.auth.id;
-    User.findOneAndUpdate({_id: userid}, {$set: { spcode: req.body.code }}, {new: true},  (err, doc) => {
+    User.findByIdAndUpdate(userid, {$set: { spcode: req.body.code }}, {new: true},  (err, doc) => {
         if(err) {
             return next(err);
         }
