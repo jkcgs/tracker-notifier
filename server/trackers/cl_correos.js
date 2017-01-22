@@ -1,5 +1,6 @@
 const request = require('request');
 const cheerio = require('cheerio');
+const base = require('../tracker-base');
 module.exports = CorreosChile;
 
 /**
@@ -9,7 +10,7 @@ module.exports = CorreosChile;
 
 function CorreosChile() {
     this.getStatus = getStatus;
-    let url = "http://seguimientoweb.correos.cl/ConEnvCorreos.aspx";
+    let url = 'http://seguimientoweb.correos.cl/ConEnvCorreos.aspx';
 
     function getStatus(code) {
         return new Promise((resolve, reject) => {
@@ -34,10 +35,10 @@ function CorreosChile() {
                 if(t.length <= 0) {
                     if($('.envio_no_existe').length > 0) {
                         // Muestra error de que el envío no existe
-                        reject('no existe');
+                        reject(base.errors.notExists);
                     } else {
                         // Error no identificado
-                        reject('error en datos recibidos');
+                        reject(base.errors.wrongData);
                     }
 
                     return;
@@ -45,48 +46,53 @@ function CorreosChile() {
 
                 // Está la tabla, pero sin estados
                 if(t.length < 2) {
-                    reject('existe, pero no hay nada');
+                    reject(base.errors.empty);
                     return;
-                }
-
-                /**
-                 * Cuando se entrega, aparece lo siguiente;
-                 <div id="Panel_Entrega">
-                    
-                    <font class="titulo">Datos de la entrega</font>
-                    <br>
-                    <br>
-                    <table class="datosgenerales">
-                        <tr height="30px">
-                            <td width="95px"  class="generalTitulo">&nbsp;&nbsp;Envio</td>
-                            <td width="200px" bgcolor="#F8F8F8"    >&nbsp;&nbsp;(codigo real)&nbsp;</td>
-                            <td width="95px"  class="generalTitulo">&nbsp;&nbsp;Entregado a</td>
-                            <td bgcolor="#F8F8F8"                  >&nbsp;&nbsp;(nombre recibidor)&nbsp;</td>
-                        </tr>
-                        <tr height="30px">
-                            <td width="95px"  class="generalTitulo">&nbsp;&nbsp;Fecha Entrega</td>
-                            <td width="200px" bgcolor="#F8F8F8"    >&nbsp;&nbsp;03/01/2017 12:26&nbsp;</td>
-                            <td width="95px"  class="generalTitulo">&nbsp;&nbsp;Rut</td>
-                            <td bgcolor="#F8F8F8"                  >&nbsp;&nbsp;(rut)&nbsp;</td>
-                        </tr>
-                        </table> 
-                    
-                </div>
-
-                */
-                // Envío entregado
-                if($('#Panel_Entrega').length > 0) {
-                    resolve('envio entregado');
                 }
 
                 // Cargar el último estado (la primera fila)
                 let td = $('td', t.eq(1));
-                let status = td.eq(0).text().replace(/&nbsp;/g, "").trim();
-                let date = td.eq(1).text().replace(/&nbsp;/g, "").trim();
-                let location = td.eq(2).text().replace(/&nbsp;/g, "").trim();
+                let status = td.eq(0).text().replace(/&nbsp;/g, '').trim();
+                let date = parseDate(td.eq(1).text().replace(/&nbsp;/g, '').trim()); // ej 03/01/2017 4:50
+                let location = td.eq(2).text().replace(/&nbsp;/g, '').trim();
+                let delivered = $('#Panel_Entrega').length > 0;
+                let deliveryInfo = null;
 
-                resolve('estado: ' + status);
+                if(delivered) {
+                    let dit = $('#Panel_Entrega .datosgenerales');
+                    deliveryInfo = {
+                        receiver: $('td', dit).eq(3).text().replace(/&nbsp;/g, '').trim(),
+                        date: parseDate($('td', dit).eq(5).text().replace(/&nbsp;/g, '').trim()),
+                        rut: $('td', dit).eq(7).text().replace(/&nbsp;/g, '').trim()
+                    };
+                }
+
+                resolve({
+                    code: code,
+                    status: status,
+                    date: date,
+                    location: location,
+                    delivered: delivered,
+                    deliveryInfo: deliveryInfo
+                });
             });
         });
     }
+}
+
+function parseDate(dateStr) {
+    let two = dateStr.split(' ');
+    let date = two[0];
+    let time = two[1];
+    let dateEls = date.split('/');
+    let hourEls = time.split(':');
+
+    let parsed = new Date(
+        Date.UTC(dateEls[2], parseInt(dateEls[1])-1, dateEls[0], hourEls[0], hourEls[1])
+    );
+
+    // agregar 3 horas para mover a UTC
+    parsed.setTime(parsed.getTime()+(60*60*3));
+
+    return parsed;
 }
