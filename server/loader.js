@@ -23,7 +23,6 @@ function fun(app) {
     debug('Done!');
 }
 
-
 /**
  * Cargar una lista de forma recursiva de todos los archivos JavaScript
  * dentro de una carpeta definida
