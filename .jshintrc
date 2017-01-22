@@ -55,6 +55,7 @@
     "globals": {
         "assert": true,
         "angular": true,
-        "$": true
+        "$": true,
+        "io": false
     }
 }

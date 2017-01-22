@@ -33,6 +33,7 @@ app.use(express.static('./node_modules/angular/'));
 app.use(express.static('./node_modules/bootstrap/dist/'));
 app.use(express.static('./node_modules/jquery/dist/'));
 app.use(express.static('./node_modules/tether/dist/'));
+app.use(express.static('./node_modules/font-awesome/'));
 
 // Append socket to res in event loop
 app.use(function(req, res, next){

@@ -5,25 +5,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Panel</title>
 
-        <!-- Bootstrap CSS -->
         <link href="/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/css/font-awesome.min.css" rel="stylesheet">
+        <link href="/stylesheets/main.css" rel="stylesheet">
     </head>
     <body ng-app="app">
         <div class="container mt-3" ng-controller="MainController as vm">
-            <div class="float-right">
-                <span class="mr-2">{{ vm.user }}</span>
-                <a href="/logout" class="btn btn-sm btn-primary">Cerrar sesión</a>
-            </div>
-
             <div ng-hide="vm.loading">
-                <h2>
+                <h2 style="display: inline">
                     Seguimiento
                     <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#add-code">Agregar</button>
                 </h2>
+
+                <div class="float-right text-right user-info">
+                    <form ng-submit="vm.changeSPC()" ng-disabled="vm.active">
+                        <label>
+                            <input class="form-control form-control-sm" ng-model="vm.spcode" />
+                            <button class="btn btn-sm btn-default"><i class="fa fa-floppy-o"></i></button>
+                        </label>
+                    </form>
+                    <span class="mr-2">{{ vm.user }}</span>
+                    <a href="/logout" class="btn btn-sm btn-primary">Cerrar sesión</a>
+                </div>
+
                 <div ng-if="vm.codes.length == 0" class="alert alert-warning mt-3">
                     ¡No tienes códigos en seguimiento!
                 </div>
-                <table ng-if="vm.codes.length > 0" class="table">
+                <table ng-if="vm.codes.length > 0" class="table codes-table">
                     <tr>
                         <th>Código</th>
                         <th>Estado</th>
@@ -67,12 +75,7 @@
         </form>
 
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            var socket = io();
-            socket.on('connection', function(data) {
-                // wtf
-            });
-        </script>
+        <script src="/app/socket.js"></script>
 
         <script src="/jquery.slim.min.js"></script>
         <script src="/js/tether.min.js"></script>

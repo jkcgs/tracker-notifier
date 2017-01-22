@@ -32,6 +32,7 @@ router.post('/login', function(req, res, next) {
 
                 debug('User logged ' + req.body.username);
                 sess.logged = true;
+                sess.spcode = user.spcode;
                 sess.username = user.username;
                 sess.userid = user._id;
 
@@ -70,7 +71,8 @@ router.get('/session', function(req, res) {
     let data = {
         logged: req.session.logged,
         username: req.session.username,
-        userid: req.session.userid
+        userid: req.session.userid,
+        spcode: req.session.spcode
     };
 
     res.json(data);

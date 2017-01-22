@@ -8,6 +8,7 @@
     Service.inject = ['$http'];
     function Service($http) {
         this.addCode = addCode;
+        this.changeSPC = changeSPC;
         this.delCode = delCode;
         this.getCodes = getCodes;
         this.getSession = getSession;
@@ -15,6 +16,10 @@
         ////////////////
         function addCode(code) {
             return $http.post('/addcode', {code: code});
+        }
+
+        function changeSPC(code) {
+            return $http.post('/user/setspcode', {code: code}).then((res) => { return res.data; });
         }
 
         function delCode(code) {
