@@ -1,12 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const jwtVerify = require('../jwt-verify');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 let Item = require('../models/item');
 let router = express.Router();
 
-router.get('/codes', function(req, res, next) {
-    //res.io.emit('hello', 'world');
-    Item.find({user: req.session.userid}, (err, result) => {
+router.get('/codes', jwtVerify, function(req, res, next) {
+    Item.find({user: req.auth.id}, (err, result) => {
         if(err) {
             res.status(500);
             res.render('error', {
@@ -17,22 +17,17 @@ router.get('/codes', function(req, res, next) {
             return;
         }
 
-        res.json(result);
+        res.json({codes: result});
     });
 });
 
-router.post('/addcode', function(req, res) {
-    if(!req.session.logged) {
-        res.status(403);
-        throw new Error('Sesión no iniciada');
-    }
-
+router.post('/addcode', jwtVerify, function(req, res) {
     if(!('code' in req.body)) {
         res.status(400);
         throw new Error('No se envió el código a agregar');
     }
 
-    Item.findOne({user: req.session.userid, code: req.body.code}).then((result) => {
+    Item.findOne({user: req.auth.id, code: req.body.code}).then((result) => {
         if(result) {
             res.status(400);
             throw new Error('El código ya existe');
@@ -58,18 +53,13 @@ router.post('/addcode', function(req, res) {
     });
 });
 
-router.post('/delcode', function(req, res, next) {
-    if(!req.session.logged) {
-        res.status(403);
-        throw new Error('Sesión no iniciada');
-    }
-
+router.post('/delcode', jwtVerify, function(req, res, next) {
     if(!('code' in req.body)) {
         res.status(400);
         throw new Error('No se envió el código a agregar');
     }
 
-    Item.findOneAndRemove({code: req.body.code, user: req.session.userid}, (err, doc) => {
+    Item.findOneAndRemove({code: req.body.code, user: req.auth.id}, (err, doc) => {
         if(err) {
             next(err);
             return;

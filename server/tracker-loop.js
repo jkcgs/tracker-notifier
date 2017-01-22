@@ -31,7 +31,7 @@ function run() {
         debug('Running tracker for items...');
     }
 
-    Item.find((err, items) => {
+    Item.find({delivered: false}, (err, items) => {
         if(err) {
             debug('Error happened when loading items from database!');
             throw err;
@@ -39,7 +39,7 @@ function run() {
 
         if(items.length === 0) {
             if(emptyMsg) {
-                debug('No codes were found at the moment!');
+                debug('No active codes were found at the moment!');
                 emptyMsg = false;
                 lastEmpty = true;
             }

@@ -88,8 +88,21 @@ router.get('/session', function(req, res) {
     res.json(data);
 });
 
+router.get('/userinfo', jwtVerify, function(req, res, next) {
+    User.findById(req.auth.id, (err, user) => {
+        if(err) {
+            return next(err);
+        }
+
+        res.json({
+            username: user.username,
+            id: user._id
+        });
+    });
+});
+
 router.get('/sessiontest', jwtVerify, function(req, res, next) {
-    res.json('ok');
+    res.json({success: true});
 });
 
 module.exports = router;

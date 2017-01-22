@@ -16,7 +16,7 @@ let verif = jwtVerify({
         return null;
     },
     isRevoked: function(req, payload, done) {
-        let revoked = !req.session.userid || (req.session.userid+'' !== payload.id+'');
+        let revoked = (req.session.userid && (req.session.userid+'' !== payload.id+''));
         done(null, revoked);
     }
 });

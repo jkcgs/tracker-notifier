@@ -36,8 +36,8 @@
                 socket.emit('register', {userid: session.userid, token: vm.token});
             });
 
-            Service.getCodes().then((codes) => {
-                vm.codes = codes;
+            Service.getCodes().then((data) => {
+                vm.codes = data.codes;
                 vm.loading = false;
             });
 
