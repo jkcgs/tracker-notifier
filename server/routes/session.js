@@ -39,8 +39,17 @@ router.post('/login', function(req, res, next) {
                     expiresIn: '1d'
                 });
 
-                res.cookie('accessToken', sess.token, { httpOnly: true });
-                res.redirect('/panel');
+                let ct = req.get('content-type');
+                if(ct && ct.indexOf('json') > -1) {
+                    res.json({
+                        success: true,
+                        token: sess.token
+                    });
+                } else {
+                    res.cookie('accessToken', sess.token, { httpOnly: true });
+                    res.redirect('/panel');
+                }
+                
             });
         });
     }).catch((reason) => {
