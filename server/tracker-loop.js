@@ -4,6 +4,7 @@ const debug = require('debug')('tracker-notifier:loop');
 const fs = require('fs');
 const path = require('path');
 const Queue = require('promise-queue');
+const providers = require('./providers');
 let Item = require('./models/item');
 let queue = new Queue(1, Infinity);
 let providerCache = {};
@@ -12,20 +13,16 @@ let lastEmpty = false;
 
 function getProvider(provider) {
     if(providerCache.hasOwnProperty(provider)) {
-        //debug('Tracker ' + provider + ' loaded from cache');
         return providerCache[provider];
     }
 
-    let trackersDir = path.join(__dirname, 'trackers');
-    let files = fs.readdirSync(trackersDir).filter((file) => file.endsWith('.js'));
-    if(files.indexOf(provider + '.js') === -1) {
+    let Provider = providers.get(provider);
+    if(Provider) {
+        providerCache[provider] = new Provider();
+        return providerCache[provider];
+    } else {
         return null;
     }
-
-    //debug('Loading tracker provider ' + provider);
-    let Provider = require('./trackers/' + provider);
-    providerCache[provider] = new Provider();
-    return providerCache[provider];
 }
 
 function run() {
