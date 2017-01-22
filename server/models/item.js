@@ -6,6 +6,7 @@ let itemSchema = mongoose.Schema({
     nextCheck: Number,
     currentStatus: String,
     lastUpdate: Date,
+    delivered: Boolean,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     altCodes: [String]
 });

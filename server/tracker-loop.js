@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const Queue = require('promise-queue');
 const providers = require('./providers');
+const simplepush = require('./simplepush');
 let Item = require('./models/item');
 let queue = new Queue(1, Infinity);
 let providerCache = {};
@@ -52,10 +53,20 @@ function run() {
 
         let j = 0;
         items.forEach((item) => {
+            if(item.delivered) {
+                //debug(item.code + ' skipped, delivered');
+                if(++j === items.length) {
+                    debug('Done! Waiting 15 seconds to restart...');
+                    setTimeout(run, 15000);
+                }
+
+                return;
+            }
+
             let provider = getProvider(item.provider);
             if(provider === null) {
                 debug('Invalid provider ' + item.provider + ' for item code ' + item.code);
-                if(queue.getPendingLength() === 0) {
+                if(++j === items.length) {
                     debug('Done! Waiting 15 seconds to restart...');
                     setTimeout(run, 15000);
                 }
@@ -66,8 +77,15 @@ function run() {
             queue.add(function(){ 
                 return provider.getStatus(item.code);
             }).then((info) => {
-                debug(info);
-                item.update({ currentStatus: info.status, lastUpdate: info.date });
+                if((item.lastUpdate.getTime() !== info.date.getTime())) {
+                    debug(info.status);
+                    simplepush.sendToUser(item.user, info.status, 'Actualización envío ' + item.code);
+                }
+
+                item.update({$set: { 
+                    currentStatus: info.status, lastUpdate: info.date, delivered: info.delivered 
+                }}, (err) => { });
+
                 io.to(item.user).emit('status', {item: item, info: info});
 
                 if(++j === items.length) {
