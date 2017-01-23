@@ -78,7 +78,6 @@ function run() {
                 return provider.getStatus(item.code);
             }).then((info) => {
                 if((item.lastUpdate.getTime() !== info.date.getTime())) {
-                    debug(info.status);
                     simplepush.sendToUser(item.user, info.status, 'Actualización envío ' + item.code);
                 }
 
@@ -93,7 +92,7 @@ function run() {
                     setTimeout(run, 15000);
                 }
             }).catch((reason) => {
-                debug(reason);
+                debug('Error: ' + reason);
             });
         });
     });
