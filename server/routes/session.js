@@ -22,12 +22,16 @@ router.post('/login', function(req, res, next) {
 
         return User.findOne({username: req.body.username}).then((user) => {
             if(typeof user === 'undefined' || !user || !user.password) {
-                throw new Error('Combinación usuario-contraseña incorrecta');
+                let e = new Error('Combinación usuario-contraseña incorrecta');
+                e.status = 401;
+                return next(e);
             }
 
             return bcrypt.compare(req.body.password, user.password).then((matches) => {
                 if(!matches) {
-                    throw new Error('Combinación usuario-contraseña incorrecta');
+                    let e = new Error('Combinación usuario-contraseña incorrecta');
+                    e.status = 401;
+                    return next(e);
                 }
 
                 debug('User logged ' + req.body.username);

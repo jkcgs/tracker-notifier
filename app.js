@@ -52,8 +52,9 @@ let store = new MongoDBStore({
 });
 
 store.on('error', function(error) {
-    assert.ifError(error);
-    assert.ok(false);
+    if(error) {
+        throw error;
+    }
 });
 
 app.use(session({ 
