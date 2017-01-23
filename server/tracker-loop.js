@@ -6,6 +6,7 @@ const path = require('path');
 const Queue = require('promise-queue');
 const providers = require('./providers');
 const simplepush = require('./simplepush');
+const trackerBase = require('./tracker-base');
 let Item = require('./models/item');
 let queue = new Queue(1, Infinity);
 let providerCache = {};
@@ -92,7 +93,10 @@ function run() {
                     setTimeout(run, 15000);
                 }
             }).catch((reason) => {
-                debug('Error: ' + reason);
+                if(++j === items.length) {
+                    debug('Done! Waiting 15 seconds to restart...');
+                    setTimeout(run, 15000);
+                }
             });
         });
     });
