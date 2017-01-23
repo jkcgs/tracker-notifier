@@ -38,6 +38,7 @@ router.post('/addcode', jwtVerify, function(req, res) {
             provider: 'cl_correos',
             nextCheck: 0,
             currentStatus: '',
+            delivered: false,
             lastUpdate: new Date(),
             user: req.session.userid,
             altCodes: []
