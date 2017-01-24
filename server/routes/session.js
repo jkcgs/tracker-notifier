@@ -17,7 +17,10 @@ router.post('/login', function(req, res, next) {
     
     req.getValidationResult().then((result) => {
         if(!result.isEmpty()) {
-            result.throw();
+            let msg = result.useFirstErrorOnly().array()[0].msg;
+            let e = new Error('Falló la validación de datos: ' + msg);
+            e.status = 400;
+            return next(e);
         }
 
         return User.findOne({username: req.body.username}).then((user) => {
