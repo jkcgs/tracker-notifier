@@ -29,7 +29,7 @@
         ////////////////
 
         function activate() {
-            Service.getSession().then((session) => {
+            Service.getSession().then(function(session) {
                 vm.user = session.username;
                 vm.spcode = session.spcode;
                 vm.origspcode = session.spcode;
@@ -38,16 +38,16 @@
                 socket.emit('register', {userid: session.userid, token: vm.token});
             });
 
-            Service.getProviders().then((providers) => {
+            Service.getProviders().then(function(providers) {
                 vm.providers = providers;
-                Service.getCodes().then((data) => {
+                Service.getCodes().then(function(data) {
                     vm.codes = data.codes;
                     vm.loading = false;
                 });
             });
 
             socket.on('status', function(data) {
-                $timeout(() => {
+                $timeout(function() {
                     for(var i = 0; i < vm.codes.length; i++) {
                         if(vm.codes[i].code === data.item.code) {
                             vm.codes[i].currentStatus = data.info.status;
@@ -74,7 +74,7 @@
                 vm.newCode = '';
                 vm.codes.push(res.data);
                 $('#add-code').modal('hide');
-            }, (err) => {
+            }, function(err) {
                 if(err.data && err.data.message) {
                     alert(err.data.message);
                 }
@@ -93,10 +93,10 @@
             }
 
             vm.comm = true;
-            Service.changeSPC(vm.spcode).then((res) => {
+            Service.changeSPC(vm.spcode).then(function(res) {
                 vm.comm = false;
                 vm.origspcode = vm.spcode;
-            }, (err) => {
+            }, function(err) {
                 alert('No se pudo cambiar el código');
                 vm.spcode = vm.origspcode;
                 vm.comm = false;
@@ -108,9 +108,11 @@
                 return;
             }
 
-            Service.delCode(code).then((res) => {
+            Service.delCode(code).then(function(res) {
                 if('success' in res.data && res.data.success) {
-                    vm.codes = vm.codes.filter((el) => el.code !== code);
+                    vm.codes = vm.codes.filter(function(el){ 
+                        return el.code !== code;
+                    });
                 } else {
                     alert('No se pudo eliminar el coso');
                 }

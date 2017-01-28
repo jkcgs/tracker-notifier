@@ -20,7 +20,7 @@
         }
 
         function changeSPC(code) {
-            return $http.post('/user/setspcode', {code: code}).then((res) => { return res.data; });
+            return $http.post('/user/setspcode', {code: code}).then(function(res) { return res.data; });
         }
 
         function delCode(code) {
@@ -28,15 +28,15 @@
         }
 
         function getCodes() {
-            return $http.get('/codes').then((res) => { return res.data; });
+            return $http.get('/codes').then(function(res) { return res.data; });
         }
 
         function getProviders() {
-            return $http.get('/providers').then((res) => { return res.data; });
+            return $http.get('/providers').then(function(res) { return res.data; });
         }
 
         function getSession() {
-            return $http.get('/session').then((res) => { return res.data; });
+            return $http.get('/session').then(function(res) { return res.data; });
         }
     }
 })();
