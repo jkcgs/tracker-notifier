@@ -9,6 +9,7 @@ module.exports = CorreosChile;
  */
 
 function CorreosChile() {
+    this.name = 'Correos Chile';
     this.getStatus = getStatus;
     let url = 'http://seguimientoweb.correos.cl/ConEnvCorreos.aspx';
 
@@ -24,7 +25,11 @@ function CorreosChile() {
 
             request.post(opts, (err, res, data) => {
                 if(err !== null) {
-                    reject(err);
+                    return reject(err);
+                }
+
+                if(!data) {
+                    return reject('No se recibieron datos');
                 }
 
                 // Cargar datos

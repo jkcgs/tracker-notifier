@@ -1,73 +1,109 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const jwtVerify = require('../jwt-verify');
+const debug = require('debug')('tracker-notifier:codes');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 let Item = require('../models/item');
+let providers = require('../providers');
 let router = express.Router();
 
 router.get('/codes', jwtVerify, function(req, res, next) {
-    Item.find({user: req.auth.id}, (err, result) => {
+    debug('cargando codigos usuario ' + req.auth.id);
+    Item.find({users: req.auth.id}, (err, result) => {
         if(err) {
-            res.status(500);
-            res.render('error', {
-                message: 'No se pudieron cargar los códigos',
-                error: err
-            });
-
-            return;
+            return next(err);
         }
 
         res.json({codes: result});
     });
 });
 
-router.post('/addcode', jwtVerify, function(req, res) {
+router.post('/addcode', jwtVerify, function(req, res, next) {
     if(!('code' in req.body)) {
-        res.status(400);
-        throw new Error('No se envió el código a agregar');
+        return res.sendError('No se envió el código a agregar', 400);
     }
 
-    Item.findOne({user: req.auth.id, code: req.body.code}).then((result) => {
-        if(result) {
-            res.status(400);
-            throw new Error('El código ya existe');
+    if(!('provider' in req.body)) {
+        return res.sendError('No se envió el proveedor del rastreo', 400);
+    }
+
+    if(!providers.exists(req.body.provider)) {
+        return res.sendError('El proveedor no existe', 400);
+    }
+
+    Item.findOne({code: req.body.code}).then((item) => {
+        if(item) {
+            let hasUser = item.users.some(function (user) {
+                return user.equals(req.auth.id);
+            });
+
+            if(hasUser) {
+                return res.sendError('El código ya existe', 400);
+            } else {
+                item.users.push(req.auth.id);
+                return item.save((err, itemsaved) => {
+                    if(err) {
+                        throw err;
+                    }
+
+                    res.json(itemsaved);
+                });
+            }
         }
 
-        let item = new Item({
+        let itemNew = new Item({
             code: req.body.code,
-            provider: 'cl_correos',
+            provider: req.body.provider,
             nextCheck: 0,
             currentStatus: '',
             delivered: false,
             lastUpdate: new Date(),
-            user: req.session.userid,
+            user: req.auth.id,
             altCodes: []
         });
 
-        item.save((err, itemsaved) => {
+        itemNew.save((err, itemsaved) => {
             if(err) {
                 throw err;
             }
 
             res.json(itemsaved);
         });
-    });
+    }).catch((err) => next(err));
 });
 
 router.post('/delcode', jwtVerify, function(req, res, next) {
     if(!('code' in req.body)) {
         res.status(400);
-        throw new Error('No se envió el código a agregar');
+        throw new Error('No se envió el código a eliminar');
     }
 
-    Item.findOneAndRemove({code: req.body.code, user: req.auth.id}, (err, doc) => {
+    Item.findOne({code: req.body.code, users: req.auth.id}, (err, doc) => {
         if(err) {
             next(err);
             return;
         }
 
-        res.json({success: true});
+        if(doc.users.length > 1) {
+            doc.update({$pullAll: {users: [req.auth.id] }}, (err2) => {
+                if(err2) {
+                    return next(err2);
+                }
+                res.json({success: true});
+            });
+        } else {
+            doc.remove((err2) => {
+                if(err2) {
+                    return next(err2);
+                }
+                res.json({success: true});
+            });
+        }
     });
+});
+
+router.get('/providers', jwtVerify, function(req, res, next) {
+    res.json(providers.getList());
 });
 
 module.exports = router;

@@ -39,9 +39,15 @@ app.use(express.static('./node_modules/tether/dist/'));
 app.use(express.static('./node_modules/font-awesome/'));
 app.use(express.static('./node_modules/dateformat/lib/'));
 
-// Append socket to res in event loop
+// Append stuff to res in event loop
 app.use(function(req, res, next){
     res.io = io;
+    res.sendError = function(msg, status) {
+        status = status || 500;
+        let e = new Error(msg);
+        e.status = status;
+        next(e);
+    };
     next();
 });
 

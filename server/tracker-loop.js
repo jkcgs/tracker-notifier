@@ -54,7 +54,7 @@ function run() {
 
         let j = 0;
         items.forEach((item) => {
-            if(item.delivered) {
+            if(item.delivered || item.users.length < 1) {
                 //debug(item.code + ' skipped, delivered');
                 if(++j === items.length) {
                     debug('Done! Waiting 15 seconds to restart...');
@@ -79,14 +79,18 @@ function run() {
                 return provider.getStatus(item.code);
             }).then((info) => {
                 if((item.lastUpdate.getTime() !== info.date.getTime())) {
-                    simplepush.sendToUser(item.user, info.status, 'Actualización envío ' + item.code);
+                    item.users.forEach((user) => {
+                        simplepush.sendToUser(user, info.status, 'Actualización envío ' + item.code);
+                    });                    
                 }
 
                 item.update({$set: { 
                     currentStatus: info.status, lastUpdate: info.date, delivered: info.delivered 
                 }}, (err) => { });
 
-                io.to(item.user).emit('status', {item: item, info: info});
+                item.users.forEach((user) => {
+                    io.to(user).emit('status', {item: item, info: info});
+                });
 
                 if(++j === items.length) {
                     debug('Done! Waiting 15 seconds to restart...');

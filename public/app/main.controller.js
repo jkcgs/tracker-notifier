@@ -15,7 +15,9 @@
         vm.spcode = '';
         vm.origspcode = '';
         vm.codes = [];
+        vm.providers = [];
         vm.newCode = '';
+        vm.newCodeProvider = 'cl_correos';
 
         vm.addCode = addCode;
         vm.changeSPC = changeSPC;
@@ -36,9 +38,12 @@
                 socket.emit('register', {userid: session.userid, token: vm.token});
             });
 
-            Service.getCodes().then((data) => {
-                vm.codes = data.codes;
-                vm.loading = false;
+            Service.getProviders().then((providers) => {
+                vm.providers = providers;
+                Service.getCodes().then((data) => {
+                    vm.codes = data.codes;
+                    vm.loading = false;
+                });
             });
 
             socket.on('status', function(data) {
@@ -57,18 +62,28 @@
 
         function addCode() {
             if(!vm.newCode || vm.comm) {
+                alert('no new code or comm');
+                console.log('newcode', vm.newCode);
+                console.log('comm', vm.comm);
                 return;
             }
 
             vm.comm = true;
-            Service.addCode(vm.newCode).then((res) => {
+            Service.addCode(vm.newCode, vm.newCodeProvider).then(function(res) {
                 vm.comm = false;
                 vm.newCode = '';
                 vm.codes.push(res.data);
                 $('#add-code').modal('hide');
             }, (err) => {
+                if(err.data && err.data.message) {
+                    alert(err.data.message);
+                }
+
                 vm.comm = false;
-                $('#add-code').modal('hide');
+                if(err.status !== 400) {
+                    $('#add-code').modal('hide');
+                }
+                
             });
         }
 

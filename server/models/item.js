@@ -7,7 +7,7 @@ let itemSchema = mongoose.Schema({
     currentStatus: String,
     lastUpdate: Date,
     delivered: Boolean,
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     altCodes: [String]
 });
 

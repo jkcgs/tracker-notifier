@@ -11,11 +11,12 @@
         this.changeSPC = changeSPC;
         this.delCode = delCode;
         this.getCodes = getCodes;
+        this.getProviders = getProviders;
         this.getSession = getSession;
         
         ////////////////
-        function addCode(code) {
-            return $http.post('/addcode', {code: code});
+        function addCode(code, provider) {
+            return $http.post('/addcode', {code: code, provider: provider});
         }
 
         function changeSPC(code) {
@@ -28,6 +29,10 @@
 
         function getCodes() {
             return $http.get('/codes').then((res) => { return res.data; });
+        }
+
+        function getProviders() {
+            return $http.get('/providers').then((res) => { return res.data; });
         }
 
         function getSession() {
