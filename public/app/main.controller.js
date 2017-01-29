@@ -17,7 +17,7 @@
         vm.codes = [];
         vm.providers = [];
         vm.newCode = '';
-        vm.newCodeProvider = 'cl_correos';
+        vm.newCodeProvider = '';
 
         vm.addCode = addCode;
         vm.changeSPC = changeSPC;

@@ -58,7 +58,7 @@ router.post('/addcode', jwtVerify, function(req, res, next) {
             currentStatus: '',
             delivered: false,
             lastUpdate: new Date(),
-            user: req.auth.id,
+            users: [req.auth.id],
             altCodes: []
         });
 

@@ -66,7 +66,7 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="code">Proveedor</label>
-                                <select name="provider" ng-value="vm.newCodeProvider" class="form-control">
+                                <select name="provider" ng-model="vm.newCodeProvider" class="form-control" required>
                                     <option ng-repeat="provider in vm.providers" value="{{provider.id}}">{{provider.name}}</option>
                                 </select>
                             </div>
