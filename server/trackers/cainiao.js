@@ -36,10 +36,14 @@ function CainiaoGlobal() {
                 let cont = JSON.parse(data.substr(1, data.length-2));
 
                 if(cont.status === 'error') {
-                    reject(new Error('Error en la API: ' + cont.message));
+                    return reject(new Error('Error en la API: ' + cont.message));
                 }
 
                 let status = cont.originCountryData.trackinfo[0];
+                if(!status.Date) {
+                    return reject(new Error('Error en la API: no se entregó la fecha del estado'));
+                }
+
                 let date = parseDate(status.Date);
 
                 resolve({
