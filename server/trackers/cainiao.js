@@ -40,8 +40,8 @@ function CainiaoGlobal() {
                 }
 
                 let status = cont.originCountryData.trackinfo[0];
-                if(!status.Date) {
-                    return reject(new Error('Error en la API: no se entregó la fecha del estado'));
+                if(!status) {
+                    return reject(new Error('Error en la API: no se entregó el estado del item'));
                 }
 
                 let date = parseDate(status.Date);
