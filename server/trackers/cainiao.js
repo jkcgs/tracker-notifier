@@ -12,19 +12,19 @@ module.exports = CainiaoGlobal;
 function CainiaoGlobal() {
     this.name = 'Cainiao Global/AliEx Standard';
     this.getStatus = getStatus;
-    let url = 'https://track24.net/ajax/tracking.ajax.php';
+    let url = 'https://www.trackingmore.com/gettracedetail.php';
 
     function getStatus(code) {
         return new Promise((resolve, reject) => {
             let opts = {
                 uri: url,
-                form: {
-                    selectedService: 'cainiao',
-                    code: code
+                qs: {
+                    express: 'cainiao',
+                    tracknumber: code
                 }
             };
 
-            request.post(opts, (err, res, data) => {
+            request.get(opts, (err, res, data) => {
                 if(err !== null) {
                     return reject(err);
                 }
@@ -33,22 +33,21 @@ function CainiaoGlobal() {
                     return reject('No se recibieron datos');
                 }
 
-                let cont = JSON.parse(data);
+                let cont = JSON.parse(data.substr(1, data.length-2));
 
                 if(cont.status === 'error') {
                     reject(new Error('Error en la API: ' + cont.message));
                 }
 
-                let status = cont.data.events;
-                status = status[status.length-1];
-                let date = parseDate(status.operationDateTime);
-                debug(status.operationAttribute);
+                let status = cont.originCountryData.trackinfo[0];
+                let date = parseDate(status.Date);
+
                 resolve({
                     code: code,
-                    status: status.operationAttribute,
+                    status: status.StatusDescription,
                     date: date,
                     location: 'No entregada',
-                    delivered: status.operationAttribute.indexOf('Delivered') > -1,
+                    delivered: cont.originCountryData.statusDataNum === 4,
                     deliveryInfo: {}
                 });
             });
@@ -56,11 +55,12 @@ function CainiaoGlobal() {
     }
 }
 
+// 2017-01-26 00:45:35
 function parseDate(dateStr) {
     let two = dateStr.split(' ');
     let date = two[0];
     let time = two[1];
-    let dateEls = date.split('.');
+    let dateEls = date.split('-');
     let hourEls = time.split(':');
 
     let parsed = new Date(
