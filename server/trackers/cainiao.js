@@ -12,15 +12,14 @@ module.exports = CainiaoGlobal;
 function CainiaoGlobal() {
     this.name = 'Cainiao Global/AliEx Standard';
     this.getStatus = getStatus;
-    let url = 'https://www.trackingmore.com/gettracedetail.php';
+    let url = 'https://global.cainiao.com/detail.htm';
 
     function getStatus(code) {
         return new Promise((resolve, reject) => {
             let opts = {
                 uri: url,
                 qs: {
-                    express: 'cainiao',
-                    tracknumber: code
+                    mailNoList: code
                 }
             };
 
@@ -33,25 +32,29 @@ function CainiaoGlobal() {
                     return reject('No se recibieron datos');
                 }
 
-                let cont = JSON.parse(data.substr(1, data.length-2));
-
-                if(cont.status === 'error') {
-                    return reject(new Error('Error en la API: ' + cont.message));
+                let cont = JSON.parse(cheerio.load(data)('#waybill_list_val_box').text()).data;
+                if (!cont) {
+                    return reject('Error en la API: No entregó datos correctos');
                 }
 
-                let status = cont.originCountryData.trackinfo[0];
+                cont = (Array.isArray(cont) ? cont[0] : cont.data[0]);
+                if(!cont.success) {
+                    return reject(new Error('Error en la API: ' + cont.errorCode));
+                }
+
+                let status = cont.latestTrackingInfo;
                 if(!status) {
                     return reject(new Error('Error en la API: no se entregó el estado del item'));
                 }
 
-                let date = parseDate(status.Date);
+                let date = parseDate(status.time);
 
                 resolve({
                     code: code,
-                    status: status.StatusDescription,
+                    status: status.desc,
                     date: date,
                     location: 'No entregada',
-                    delivered: cont.originCountryData.statusDataNum === 4,
+                    delivered: cont.status === 'SIGNIN',
                     deliveryInfo: {}
                 });
             });
