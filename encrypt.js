@@ -1,5 +1,6 @@
-var prompt = require('prompt');
-var bcrypt = require('bcrypt');
+const prompt = require('prompt');
+const bcrypt = require('bcrypt');
+
 prompt.start();
 prompt.get(
     [{
@@ -12,13 +13,15 @@ prompt.get(
     function (err, result) {
         if(result.password !== result.repeat) {
             console.log('No coinciden');
-        } else {
-            bcrypt.hash(result.password, 10, function(err, hash) {
-                if(err) {
-                    throw err;
-                }
-                console.log('Hash: ' + hash);
-            });
+            return;
         }
+
+        bcrypt.hash(result.password, 10, (err, hash) => {
+            if(err) {
+                throw err;
+            }
+
+            console.log('Hash: ' + hash);
+        });
     }
 );
