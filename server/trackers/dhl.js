@@ -1,4 +1,4 @@
-const request = require('request-promise');
+const request = require('request-promise-native');
 const cheerio = require('cheerio');
 const moment = require('moment');
 const base = require('../tracker-base');
