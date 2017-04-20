@@ -97,6 +97,7 @@ function run() {
                     setTimeout(run, 15000);
                 }
             }).catch((reason) => {
+                debug(reason);
                 if(++j === items.length) {
                     debug('Done! Waiting 15 seconds to restart...');
                     setTimeout(run, 15000);
