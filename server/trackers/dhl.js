@@ -1,5 +1,4 @@
 const request = require('request-promise-native');
-const cheerio = require('cheerio');
 const moment = require('moment');
 const base = require('../tracker-base');
 const debug = require('debug')('tracker-notifier:dhl');
@@ -24,7 +23,6 @@ function DHL() {
                 }
             }
 
-            // "ednesday, April 19, 2017 17:13
             let d = moment(status.date + status.time, 'dddd, MMMM DD, YYYY HH:mm');
 
             return {
