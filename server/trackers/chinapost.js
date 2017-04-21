@@ -21,7 +21,7 @@ function ChinaPost() {
             let statuses = table.find('tr').eq(0);
 
             let time = statuses.eq(0).find('td').eq(0).text();
-            let status = statuses.eq(0).find('td').eq(1).text();
+            let status = statuses.eq(0).find('td').eq(1).text().trim();
             let ptime = moment(time, 'YYYY-MM-DD HH:mm:ss.0');
 
             return {
