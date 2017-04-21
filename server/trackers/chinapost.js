@@ -13,7 +13,7 @@ function ChinaPost() {
     function getStatus(code) {
         return request.post(url, {form:{'order_no':code}}).then(function(data) {
             if(data.indexOf('is invalid') > -1 || data.indexOf('server is busy') > -1) {
-                throw new Error(base.errors.notExists);
+                throw new base.StatusError(base.errors.notExists);
             }
 
             let $ = cheerio.load(data);

@@ -1,4 +1,12 @@
+class StatusError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'StatusError';
+    }
+}
+
 module.exports = {
+    StatusError: StatusError,
     errors: {
         empty: 1,
         notExists: 2,
